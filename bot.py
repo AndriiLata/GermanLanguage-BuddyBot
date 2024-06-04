@@ -3,6 +3,8 @@ import telebot
 from telebot import types
 from telebot.types import Message
 
+import database
+
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -83,14 +85,15 @@ def handle_info(message: Message):
     user_data['state'] = STATE_PROFILE_COMPLETE
     user_data['personal_info'] = message.text
 
-
+    database.get_connection()
+    database.create_table()
+    database.insert_user_data(user_data)
 # for loop to iterate over the user_data dictionary
     for key, value in user_data.items():
         print(key, value)
 
     bot.send_message(message.chat.id, "Thanks for sharing your information. Your profile is now complete. "
                                       "We will now match you with other users.")
-
 
 
 bot.infinity_polling()
