@@ -22,6 +22,8 @@ user_data = {}
 STATE_ASK_FOR_NAME = 0
 STATE_ASK_FOR_GERMAN_LEVEL = 1
 STATE_ASK_FOR_PICTURE = 2
+STATE_ASK_FOR_INFO = 3
+STATE_PROFILE_COMPLETE = 4
 
 
 @bot.message_handler(commands=['start'])
@@ -54,17 +56,16 @@ def handle_language_level(message: Message):
     user_data['language_level'] = message.text
     user_data['state'] = STATE_ASK_FOR_PICTURE
     name = user_data['name']
-    language_level = user_data['language_level']
-    bot.send_message(message.chat.id, f"Great! Your name is {name} and your language level is {language_level}.\n"
-                                      f"Before we start matching you, please upload a picture of yourself.",
+
+    bot.send_message(message.chat.id, f"Great! "
+                                      f"{name}, before we start matching you, please upload a picture of yourself.",
                      reply_markup=types.ReplyKeyboardRemove())
 
 
-
 #TODO: Handle picture upload
-#Handle picture upload
 @bot.message_handler(content_types=['photo'])
 def handle_photo(message: Message):
+    user_data['state'] = STATE_ASK_FOR_INFO
     user_data['file_id'] = message.photo[-1].file_id
 
     name = user_data['name']
@@ -72,7 +73,24 @@ def handle_photo(message: Message):
     file_id = user_data['file_id']
 
     bot.send_photo(message.chat.id, file_id,
-                   caption=f"{name}, German level: {language_level}\n\n")
+                   caption=f"{name}, German level: {language_level}\n\n"
+                           f"Now please write something about yourself to make your profile more personal.\n"
+                           f"For example, what are you studying or where are you from\n\n ")
+
+
+@bot.message_handler(func=lambda message: user_data['state'] == STATE_ASK_FOR_INFO)
+def handle_info(message: Message):
+    user_data['state'] = STATE_PROFILE_COMPLETE
+    user_data['personal_info'] = message.text
+
+
+# for loop to iterate over the user_data dictionary
+    for key, value in user_data.items():
+        print(key, value)
+
+    bot.send_message(message.chat.id, "Thanks for sharing your information. Your profile is now complete. "
+                                      "We will now match you with other users.")
+
 
 
 bot.infinity_polling()
