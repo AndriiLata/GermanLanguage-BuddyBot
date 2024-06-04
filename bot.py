@@ -31,8 +31,10 @@ STATE_PROFILE_COMPLETE = 4
 
 database.get_connection()
 database.create_table()
+database.create_table_matches()
 
 
+@bot.message_handler(func=lambda message: message.text == 'Stop ✋')
 @bot.message_handler(commands=['start'])
 def start(message: Message):
     user = database.search_me(message.chat.id)
@@ -57,7 +59,8 @@ def shown_profile(file_id, name, language_level, info, message: Message):
     markup = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
     like = types.KeyboardButton("❤️")
     dislike = types.KeyboardButton("👎")
-    markup.add(like, dislike)
+    myprofile = types.KeyboardButton("Stop ✋")
+    markup.add(like, dislike, myprofile)
     bot.send_photo(message.chat.id, file_id,
                    caption=f"{name}, German level: {language_level}\n\n"
                            f"{info}\n",
@@ -67,12 +70,30 @@ def shown_profile(file_id, name, language_level, info, message: Message):
 @bot.message_handler(func=lambda message: message.text == 'Start Matching'
                                           or message.text == '❤️' or message.text == '👎')
 def start_matching(message: Message):
+
+    if message.text == '❤️':
+        previous_profile = database.get_previous_profile(message.chat.id)
+        if previous_profile:
+            database.insert_match(message.chat.id, previous_profile[0])
+            #TODO : bot.send_contact()
+        else:
+            print('No previous profile found')
+
+    elif message.text == '👎':
+        previous_profile = database.get_previous_profile(message.chat.id)
+        if previous_profile:
+            database.insert_match(message.chat.id, previous_profile[0])
+        else:
+            print('No previous profile found')
+
     me = database.search_me(message.chat.id)
     showed_user = match.get_user(me[3], message.chat.id)
     if showed_user:
         shown_profile(showed_user[4], showed_user[2], showed_user[3], showed_user[5], message)
+        chat_id_from_showed_user = showed_user[6]
+        database.insert_previous_profile(message.chat.id, chat_id_from_showed_user)
     else:
-        bot.send_message(message.chat.id, "No user found")
+        bot.send_message(message.chat.id, "You have reached your daily limit. Please try again tomorrow.")
 
 
 @bot.message_handler(func=lambda message: message.text == 'Edit Profile')
@@ -109,7 +130,6 @@ def handle_language_level(message: Message):
                      reply_markup=types.ReplyKeyboardRemove())
 
 
-#TODO: Handle picture upload
 @bot.message_handler(content_types=['photo'])
 def handle_photo(message: Message):
     user_data['state'] = STATE_ASK_FOR_INFO
@@ -122,7 +142,7 @@ def handle_photo(message: Message):
     bot.send_photo(message.chat.id, file_id,
                    caption=f"{name}, German level: {language_level}\n\n"
                            f"Now please write something about yourself to make your profile more personal.\n"
-                           f"For example, what are you studying or where are you from\n\n ")
+                           f"For example, what you are studying or where you are from\n\n ")
 
 
 @bot.message_handler(func=lambda message: user_data['state'] == STATE_ASK_FOR_INFO)
