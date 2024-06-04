@@ -4,6 +4,7 @@ from telebot import types
 from telebot.types import Message
 
 import database
+import match
 
 from dotenv import load_dotenv
 
@@ -34,7 +35,7 @@ database.create_table()
 
 @bot.message_handler(commands=['start'])
 def start(message: Message):
-    user = database.search_user(message.chat.id)
+    user = database.search_me(message.chat.id)
     if user:
         my_profile(user[4], user[2], user[3], user[5], message)
     else:
@@ -50,6 +51,28 @@ def my_profile(file_id, name, language_level, info, message: Message):
                    caption=f"{name}, German level: {language_level}\n\n"
                            f"{info}\n",
                    reply_markup=markup)
+
+
+def shown_profile(file_id, name, language_level, info, message: Message):
+    markup = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
+    like = types.KeyboardButton("❤️")
+    dislike = types.KeyboardButton("👎")
+    markup.add(like, dislike)
+    bot.send_photo(message.chat.id, file_id,
+                   caption=f"{name}, German level: {language_level}\n\n"
+                           f"{info}\n",
+                   reply_markup=markup)
+
+
+@bot.message_handler(func=lambda message: message.text == 'Start Matching'
+                                          or message.text == '❤️' or message.text == '👎')
+def start_matching(message: Message):
+    me = database.search_me(message.chat.id)
+    showed_user = match.get_user(me[3], message.chat.id)
+    if showed_user:
+        shown_profile(showed_user[4], showed_user[2], showed_user[3], showed_user[5], message)
+    else:
+        bot.send_message(message.chat.id, "No user found")
 
 
 @bot.message_handler(func=lambda message: message.text == 'Edit Profile')

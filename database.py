@@ -44,7 +44,7 @@ def insert_user_data(user_data):
     conn.close()
 
 
-def search_user(chat_id):
+def search_me(chat_id):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('''
