@@ -28,13 +28,35 @@ STATE_ASK_FOR_INFO = 3
 STATE_PROFILE_COMPLETE = 4
 
 
+database.get_connection()
+database.create_table()
+
+
 @bot.message_handler(commands=['start'])
 def start(message: Message):
+    user = database.search_user(message.chat.id)
+    if user:
+        my_profile(user[4], user[2], user[3], user[5], message)
+    else:
+        start(message)
+
+
+def my_profile(file_id, name, language_level, info, message: Message):
+    markup = types.ReplyKeyboardMarkup(row_width=1 ,resize_keyboard=True)
+    edit_profile = types.KeyboardButton("Edit Profile")
+    start_matching = types.KeyboardButton("Start Matching")
+    markup.add(start_matching, edit_profile)
+    bot.send_photo(message.chat.id, file_id,
+                   caption=f"{name}, German level: {language_level}\n\n"
+                           f"{info}\n",
+                   reply_markup=markup)
+
+
+@bot.message_handler(func=lambda message: message.text == 'Edit Profile')
+def start(message: Message):
+    database.delete_user(message.chat.id)
     user_data['state'] = STATE_ASK_FOR_NAME
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item = types.KeyboardButton("Start")
-    markup.add(item)
-    bot.send_message(message.chat.id, "To get started please enter your name.", reply_markup=types.ReplyKeyboardRemove())
+    bot.send_message(message.chat.id, "To get started please enter your name.")
 
 
 @bot.message_handler(func=lambda message: user_data['state'] == STATE_ASK_FOR_NAME)
@@ -84,16 +106,11 @@ def handle_photo(message: Message):
 def handle_info(message: Message):
     user_data['state'] = STATE_PROFILE_COMPLETE
     user_data['personal_info'] = message.text
+    user_data['chat_id'] = message.chat.id
 
-    database.get_connection()
-    database.create_table()
     database.insert_user_data(user_data)
-# for loop to iterate over the user_data dictionary
-    for key, value in user_data.items():
-        print(key, value)
 
-    bot.send_message(message.chat.id, "Thanks for sharing your information. Your profile is now complete. "
-                                      "We will now match you with other users.")
+    my_profile(user_data['file_id'], user_data['name'], user_data['language_level'], user_data['personal_info'], message)
 
 
 bot.infinity_polling()
