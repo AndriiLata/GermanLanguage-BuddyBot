@@ -2,6 +2,7 @@ import os
 import telebot
 from telebot import types
 from telebot.types import Message
+from telebot.apihelper import ApiTelegramException
 
 import database
 import match
@@ -27,6 +28,7 @@ STATE_ASK_FOR_GERMAN_LEVEL = 1
 STATE_ASK_FOR_PICTURE = 2
 STATE_ASK_FOR_INFO = 3
 STATE_PROFILE_COMPLETE = 4
+STATE_MOBILE_NUMBER = 5
 
 
 database.get_connection()
@@ -45,7 +47,7 @@ def start(message: Message):
 
 
 def my_profile(file_id, name, language_level, info, message: Message):
-    markup = types.ReplyKeyboardMarkup(row_width=1 ,resize_keyboard=True)
+    markup = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
     edit_profile = types.KeyboardButton("Edit Profile")
     start_matching = types.KeyboardButton("Start Matching")
     markup.add(start_matching, edit_profile)
@@ -75,7 +77,18 @@ def start_matching(message: Message):
         previous_profile = database.get_previous_profile(message.chat.id)
         if previous_profile:
             database.insert_match(message.chat.id, previous_profile[0])
-            #TODO : bot.send_contact()
+
+            my_phone_number = database.search_me(message.chat.id)[8]
+            my_name = database.search_me(message.chat.id)[2]
+            his_name = database.search_me(previous_profile[0])[2]
+
+            try:
+                bot.send_contact(previous_profile[0], my_phone_number, my_name)
+                bot.send_message(previous_profile[0], f"{my_name} from Munich liked you! ❤️"
+                                                      f"\nText him/her to start practicing german together 🇩🇪🚀")
+                bot.send_message(message.chat.id, f"Your contact has been shared with {his_name}")
+            except ApiTelegramException as e:
+                bot.send_message(message.chat.id, f"Something went wrong. Please try again later.")
         else:
             print('No previous profile found')
 
@@ -100,7 +113,7 @@ def start_matching(message: Message):
 def start(message: Message):
     database.delete_user(message.chat.id)
     user_data['state'] = STATE_ASK_FOR_NAME
-    bot.send_message(message.chat.id, "To get started please enter your name.")
+    bot.send_message(message.chat.id, "To get started please enter your name.", reply_markup=types.ReplyKeyboardRemove())
 
 
 @bot.message_handler(func=lambda message: user_data['state'] == STATE_ASK_FOR_NAME)
@@ -149,6 +162,21 @@ def handle_photo(message: Message):
 def handle_info(message: Message):
     user_data['state'] = STATE_PROFILE_COMPLETE
     user_data['personal_info'] = message.text
+
+    markup = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
+    button = types.KeyboardButton("Send Phone Number", request_contact=True)
+    markup.add(button)
+
+    bot.send_message(message.chat.id, "Your profile has been created successfully.\n"
+                                      "To be able to use the bot, you need to share your contact with the button below",
+                     reply_markup=markup)
+
+
+# ask for phone number
+@bot.message_handler(content_types=['contact'])
+def handle_phone_number(message: Message):
+    user_data['state'] = STATE_MOBILE_NUMBER
+    user_data['phone_number'] = message.contact.phone_number
     user_data['chat_id'] = message.chat.id
 
     database.insert_user_data(user_data)

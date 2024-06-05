@@ -25,7 +25,8 @@ def create_table():
         language_level VARCHAR(255),
         file_id VARCHAR(255),
         personal_info TEXT,
-        previous_profile VARCHAR(255)
+        previous_profile VARCHAR(255),
+        phone_number VARCHAR(255)
     )
     ''')
     conn.commit()
@@ -62,12 +63,13 @@ def insert_user_data(user_data):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('''
-    INSERT INTO users (state, chat_id, name, language_level, file_id, personal_info)
-    VALUES (%s, %s, %s, %s, %s, %s)
-    ''', (user_data['state'], user_data['chat_id'], user_data['name'], user_data['language_level'], user_data['file_id'], user_data['personal_info']))
+    INSERT INTO users (state, chat_id, name, language_level, file_id, personal_info, phone_number)
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
+    ''', (user_data['state'], user_data['chat_id'], user_data['name'], user_data['language_level'], user_data['file_id'], user_data['personal_info'], user_data['phone_number']))
     conn.commit()
     cursor.close()
     conn.close()
+    print('User data inserted')
 
 
 def create_table_matches():
@@ -120,6 +122,19 @@ def search_me(chat_id):
     cursor.close()
     conn.close()
     return user
+
+
+# get my phone number with my chat_id
+def get_phone_number(chat_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+    SELECT phone_number FROM users WHERE chat_id = %s
+    ''', (chat_id,))
+    phone_number = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return phone_number
 
 
 def delete_user(chat_id):
