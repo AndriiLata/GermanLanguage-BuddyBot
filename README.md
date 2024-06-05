@@ -22,7 +22,7 @@ Telegram bot that helps connect users with different German levels to practice t
 
 - **bot.py**: Contains all the commands to handle user input and interactions.
 - **database.py**: Manages the MySQL database setup, and handles insertions, deletions, and searches for user data.
-- **match.py**: Contains the matching function to connect users based on their preferences.
+- **match.py**: Contains the matching function to connect users based on their german level.
 
 ## Usage
 
