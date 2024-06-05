@@ -2,6 +2,8 @@
 
 Telegram bot that helps connect users with different German levels to practice the language together.
 
+![Screenshots of the bot chat](/petra_screens.png)
+
 ## Features
 
 - **Matching Algorithm**: A robust matching function to connect users based on their language-level.
