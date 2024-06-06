@@ -68,7 +68,7 @@ def insert_user_data(user_data):
     conn.commit()
     cursor.close()
     conn.close()
-    print('User data inserted')
+
 
 
 def create_table_matches():
