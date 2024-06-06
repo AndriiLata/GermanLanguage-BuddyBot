@@ -16,17 +16,9 @@ def create_table():
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        state INT,
-        chat_id VARCHAR(255),
-        name VARCHAR(255),
-        language_level VARCHAR(255),
-        file_id VARCHAR(255),
-        personal_info TEXT,
-        previous_profile VARCHAR(255),
-        phone_number VARCHAR(255)
-    )
+    DELETE FROM users;
+    DELETE FROM matches;
+    
     ''')
     conn.commit()
     cursor.close()
