@@ -40,6 +40,7 @@ database.create_table_matches()
 @bot.message_handler(func=lambda message: message.text == 'Stop ✋')
 @bot.message_handler(commands=['start'])
 def start(message: Message):
+    print(message.chat.id)
     user = database.search_me(message.chat.id)
     if user:
         print(user)
