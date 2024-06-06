@@ -1,4 +1,4 @@
-import os
+import os, sys
 import telebot
 from telebot import types
 from telebot.types import Message
@@ -40,10 +40,10 @@ database.create_table_matches()
 @bot.message_handler(func=lambda message: message.text == 'Stop ✋')
 @bot.message_handler(commands=['start'])
 def start(message: Message):
-    print(message.chat.id)
+    print(message.chat.id, file=sys.stderr)
     user = database.search_me(message.chat.id)
     if user:
-        print(user)
+        print(user, file=sys.stderr)
         my_profile(user[4], user[2], user[3], user[5], message)
     else:
         start(message)
