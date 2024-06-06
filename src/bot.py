@@ -32,6 +32,7 @@ STATE_MOBILE_NUMBER = 5
 
 
 database.get_connection()
+
 database.create_table()
 database.create_table_matches()
 
@@ -41,6 +42,7 @@ database.create_table_matches()
 def start(message: Message):
     user = database.search_me(message.chat.id)
     if user:
+        print(user)
         my_profile(user[4], user[2], user[3], user[5], message)
     else:
         start(message)

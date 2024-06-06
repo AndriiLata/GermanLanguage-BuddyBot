@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:mysql://localhost:3306/users</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="petradatabase@petra-bot-database.c5oaw26koq0u.us-east-1.rds.amazonaws.com" uuid="8d76f812-fb6b-45fb-b8f5-335d9e98be8b">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://petra-bot-database.c5oaw26koq0u.us-east-1.rds.amazonaws.com:3306/petradatabase</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
