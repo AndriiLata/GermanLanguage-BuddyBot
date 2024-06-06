@@ -52,7 +52,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker pull ${{ steps.meta.outputs.images }}
+            docker pull ghcr.io/andriilata/germanlanguage-buddybot:main
             docker stop bot
             docker rm bot
-            docker run -d --name bot -e BOT_TOKEN=${{ secrets.BOT_TOKEN }} ${{ steps.meta.outputs.images }}
+            docker run -d --name bot -e BOT_TOKEN=${{ secrets.BOT_TOKEN }} ghcr.io/andriilata/germanlanguage-buddybot:main
