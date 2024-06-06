@@ -55,4 +55,4 @@ jobs:
             docker pull ghcr.io/andriilata/germanlanguage-buddybot:main
             docker stop bot
             docker rm bot
-            docker run -d --name bot -e BOT_TOKEN=${{ secrets.BOT_TOKEN }} ghcr.io/andriilata/germanlanguage-buddybot:main
+            docker run -d --name bot -e BOT_TOKEN=${{ secrets.BOT_TOKEN }} -e HOST=${{ secrets.DB_HOST }} -e DB=${{ secrets.DB }} -e PASSWORD=${{ secrets.PASSWORD }} ghcr.io/andriilata/germanlanguage-buddybot:main
