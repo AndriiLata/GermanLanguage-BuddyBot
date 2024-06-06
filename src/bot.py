@@ -33,7 +33,7 @@ STATE_MOBILE_NUMBER = 5
 
 
 database.get_connection()
-#database.create_table()
+database.create_table()
 #database.create_table_matches()
 
 
