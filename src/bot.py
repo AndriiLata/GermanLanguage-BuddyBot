@@ -34,7 +34,7 @@ STATE_MOBILE_NUMBER = 5
 
 database.get_connection()
 database.create_table() # second try
-#database.create_table_matches()
+database.create_table_matches()
 
 
 @bot.message_handler(func=lambda message: message.text == 'Stop ✋')
