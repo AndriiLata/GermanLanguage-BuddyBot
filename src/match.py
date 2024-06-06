@@ -13,7 +13,7 @@ def get_user(language_level, chat_id):
         if isinstance(chat_id, str):
             chat_id = int(chat_id)
 
-        if user[7] not in list_who_liked and user_id != chat_id:
+        if user_id not in list_who_liked and user_id != chat_id:
             return user
 
 

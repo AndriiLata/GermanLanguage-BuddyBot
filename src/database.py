@@ -70,7 +70,6 @@ def insert_user_data(user_data):
     conn.close()
 
 
-
 def create_table_matches():
     conn = get_connection()
     cursor = conn.cursor()
