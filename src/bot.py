@@ -93,7 +93,7 @@ def start_matching(message: Message):
                                                       f"\nText him/her to start practicing german together 🇩🇪🚀")
                 bot.send_message(message.chat.id, f"Your contact has been shared with {his_name}")
             except ApiTelegramException as e:
-                bot.send_message(message.chat.id, f"Something went wrong. Please try again later.")
+                bot.send_message(message.chat.id, f"Your contact couldn't been shared.")
         else:
             print('No previous profile found')
 

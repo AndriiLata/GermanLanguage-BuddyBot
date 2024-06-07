@@ -146,12 +146,34 @@ def delete_user(chat_id):
     conn.close()
 
 
+# def get_user_same_language_level(language_level):
+#     conn = get_connection()
+#     cursor = conn.cursor()
+#     cursor.execute('''
+#     SELECT * FROM users WHERE language_level = %s
+#     ''', (language_level,))
+#     users = cursor.fetchall()
+#     cursor.close()
+#     conn.close()
+#     return users
+
+
 def get_user_same_language_level(language_level):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('''
-    SELECT * FROM users WHERE language_level = %s
-    ''', (language_level,))
+
+    # Adjust the query to handle "C1" and "Native Speaker" equivalence
+    if language_level == "C1" or language_level == "Native Speaker":
+        query = '''
+        SELECT * FROM users WHERE language_level IN ('C1', 'Native Speaker')
+        '''
+        cursor.execute(query)
+    else:
+        query = '''
+        SELECT * FROM users WHERE language_level = %s
+        '''
+        cursor.execute(query, (language_level,))
+
     users = cursor.fetchall()
     cursor.close()
     conn.close()
