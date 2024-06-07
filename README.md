@@ -33,16 +33,6 @@ Once the bot is running, users can interact with it through the following comman
 - **❤️**: Sends previous user your contact and a message that you liked him
 - **👎**: Shows the next profile
 - **Stop**: Returns user to the starting page
-
-## Contributing
-
-We welcome contributions to enhance Petra. To contribute:
-
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Make your changes and commit them.
-4. Push your changes to your fork.
-5. Create a pull request.
    
 
 ## Contact
