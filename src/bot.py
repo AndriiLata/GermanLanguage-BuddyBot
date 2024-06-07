@@ -111,7 +111,7 @@ def start_matching(message: Message):
         chat_id_from_showed_user = showed_user[2]
         database.insert_previous_profile(message.chat.id, chat_id_from_showed_user)
     else:
-        bot.send_message(message.chat.id, "You have reached your daily limit. Please try again tomorrow.")
+        bot.send_message(message.chat.id, "No users left in Munich. Share the bot with your friends.")
 
 
 @bot.message_handler(func=lambda message: message.text == 'Edit Profile')
@@ -165,6 +165,11 @@ def handle_photo(message: Message):
                    caption=f"{name}, German level: {language_level}\n\n"
                            f"Now please write something about yourself to make your profile more personal.\n"
                            f"For example, what you are studying or where you are from\n\n ")
+
+
+@bot.message_handler(func=lambda message: user_data[message.chat.id]['state'] == STATE_ASK_FOR_PICTURE, content_types=['text'])
+def handle_text_instead_of_photo(message: Message):
+    bot.send_message(message.chat.id, "Please upload a picture of yourself. This is required before we can proceed.")
 
 
 @bot.message_handler(func=lambda message: user_data[message.chat.id]['state'] == STATE_ASK_FOR_INFO)
